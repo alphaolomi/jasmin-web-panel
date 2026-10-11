@@ -25,6 +25,11 @@ class TelnetConnection(object):
     def __del__(self):
         "Make sure telnet connection is closed when unleashing response back to client"
         try:
-            self.telnet.sendline('quit')
-        except pexpect.ExceptionPexpect:
-            self.telnet.kill(9)
+            if hasattr(self, 'telnet') and self.telnet is not None:
+                self.telnet.sendline('quit')
+        except (pexpect.ExceptionPexpect, AttributeError):
+            try:
+                if hasattr(self, 'telnet') and self.telnet is not None:
+                    self.telnet.kill(9)
+            except (pexpect.ExceptionPexpect, AttributeError):
+                pass
